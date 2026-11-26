@@ -29,18 +29,18 @@ jobs:
           $vst = Get-ChildItem -Path build -Recurse -Directory -Filter "AI Master.vst3" |
                  Where-Object { $_.FullName -match "Release" } | Select-Object -First 1
           if (-not $vst) { throw "VST3 bundle not found" }
-          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          New-Item -ItemType Directory -Force -Path dist, release | Out-Null
           Copy-Item -Recurse $vst.FullName "dist/AI Master.vst3"
-          Compress-Archive -Path "dist/AI Master.vst3" -DestinationPath "dist/AI-Master-VST3-Windows.zip"
+          Compress-Archive -Path "dist/AI Master.vst3" -DestinationPath "release/AI-Master-VST3-Windows.zip"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: AI-Master-VST3-Windows
-          path: dist/AI Master.vst3
+          path: dist/
 
       - name: Attach to GitHub release (tags only)
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/AI-Master-VST3-Windows.zip
+          files: release/AI-Master-VST3-Windows.zip
